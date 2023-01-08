@@ -44,7 +44,7 @@ def main():
 
     # list recordings
     recordings = os.listdir(args.dataset_path)
-    recordings = np.array(recordings, np.object)
+    recordings = np.array(recordings, np.object_)
     recordings = recordings[[os.path.isdir(os.path.join(args.dataset_path, r)) for r in recordings]]
     recordings.sort()
 
@@ -113,26 +113,26 @@ def main():
             if not allValid[j]:
                 continue
 
-            # Load image
-            imgFile = os.path.join(recDir, 'frames', '%05d.jpg' % frame)
-            if not os.path.isfile(imgFile):
-                logError('Warning: Could not read image file %s!' % imgFile)
-                continue
-            img = Image.open(imgFile)        
-            if img is None:
-                logError('Warning: Could not read image file %s!' % imgFile)
-                continue
-            img = np.array(img.convert('RGB'))
+            # # Load image
+            # imgFile = os.path.join(recDir, 'frames', '%05d.jpg' % frame)
+            # if not os.path.isfile(imgFile):
+            #     logError('Warning: Could not read image file %s!' % imgFile)
+            #     continue
+            # img = Image.open(imgFile)        
+            # if img is None:
+            #     logError('Warning: Could not read image file %s!' % imgFile)
+            #     continue
+            # img = np.array(img.convert('RGB'))
 
-            # Crop images
-            imFace = cropImage(img, faceBbox[j,:])
-            imEyeL = cropImage(img, leftEyeBbox[j,:])
-            imEyeR = cropImage(img, rightEyeBbox[j,:])
+            # # Crop images
+            # imFace = cropImage(img, faceBbox[j,:])
+            # imEyeL = cropImage(img, leftEyeBbox[j,:])
+            # imEyeR = cropImage(img, rightEyeBbox[j,:])
 
-            # Save images
-            Image.fromarray(imFace).save(os.path.join(facePath, '%05d.jpg' % frame), quality=95)
-            Image.fromarray(imEyeL).save(os.path.join(leftEyePath, '%05d.jpg' % frame), quality=95)
-            Image.fromarray(imEyeR).save(os.path.join(rightEyePath, '%05d.jpg' % frame), quality=95)
+            # # Save images
+            # Image.fromarray(imFace).save(os.path.join(facePath, '%05d.jpg' % frame), quality=95)
+            # Image.fromarray(imEyeL).save(os.path.join(leftEyePath, '%05d.jpg' % frame), quality=95)
+            # Image.fromarray(imEyeR).save(os.path.join(rightEyePath, '%05d.jpg' % frame), quality=95)
 
             # Collect metadata
             meta['labelRecNum'] += [int(recording)]
@@ -161,8 +161,8 @@ def main():
     reference['labelTest'] = reference['labelTest'].flatten()
 
     # Find mapping
-    mKey = np.array(['%05d_%05d' % (rec, frame) for rec, frame in zip(meta['labelRecNum'], meta['frameIndex'])], np.object)
-    rKey = np.array(['%05d_%05d' % (rec, frame) for rec, frame in zip(reference['labelRecNum'], reference['frameIndex'])], np.object)
+    mKey = np.array(['%05d_%05d' % (rec, frame) for rec, frame in zip(meta['labelRecNum'], meta['frameIndex'])], np.object_)
+    rKey = np.array(['%05d_%05d' % (rec, frame) for rec, frame in zip(reference['labelRecNum'], reference['frameIndex'])], np.object_)
     mIndex = {k: i for i,k in enumerate(mKey)}
     rIndex = {k: i for i,k in enumerate(rKey)}
     mToR = np.zeros((len(mKey,)),int) - 1
@@ -180,9 +180,9 @@ def main():
             #break
 
     # Copy split from reference
-    meta['labelTrain'] = np.zeros((len(meta['labelRecNum'],)),np.bool)
-    meta['labelVal'] = np.ones((len(meta['labelRecNum'],)),np.bool) # default choice
-    meta['labelTest'] = np.zeros((len(meta['labelRecNum'],)),np.bool)
+    meta['labelTrain'] = np.zeros((len(meta['labelRecNum'],)),np.bool_)
+    meta['labelVal'] = np.ones((len(meta['labelRecNum'],)),np.bool_) # default choice
+    meta['labelTest'] = np.zeros((len(meta['labelRecNum'],)),np.bool_)
 
     validMappingMask = mToR >= 0
     meta['labelTrain'][validMappingMask] = reference['labelTrain'][mToR[validMappingMask]]

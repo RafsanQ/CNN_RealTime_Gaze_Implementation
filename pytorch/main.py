@@ -55,9 +55,9 @@ args = parser.parse_args()
 doLoad = not args.reset # Load checkpoint at the beginning
 doTest = args.sink # Only run test, no training
 
-workers = 16
+workers = 12
 epochs = 25
-batch_size = torch.cuda.device_count()*100 # Change if out of cuda memory
+batch_size = torch.cuda.device_count()*50 # Change if out of cuda memory
 
 base_lr = 0.0001
 momentum = 0.9
@@ -73,11 +73,20 @@ count = 0
 
 
 def main():
+
+    print(torch.cuda.get_device_name(0))
+    print('__CUDA Device Total Memory [GB]:',torch.cuda.get_device_properties(0).total_memory/1e9)
+
     global args, best_prec1, weight_decay, momentum
 
     model = ITrackerModel()
     model = torch.nn.DataParallel(model)
-    model.cuda()
+    # model.cuda()
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Device: ", device)
+    model = model.to(device)
+
     imSize=(224,224)
     cudnn.benchmark = True   
 
@@ -98,12 +107,14 @@ def main():
 
     
     dataTrain = ITrackerData(dataPath = args.data_path, split='train', imSize = imSize)
+
     dataVal = ITrackerData(dataPath = args.data_path, split='test', imSize = imSize)
-   
+
     train_loader = torch.utils.data.DataLoader(
         dataTrain,
         batch_size=batch_size, shuffle=True,
         num_workers=workers, pin_memory=True)
+
 
     val_loader = torch.utils.data.DataLoader(
         dataVal,
