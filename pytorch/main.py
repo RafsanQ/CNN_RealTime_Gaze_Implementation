@@ -57,7 +57,9 @@ doTest = args.sink # Only run test, no training
 
 workers = 12
 epochs = 25
-batch_size = torch.cuda.device_count()*50 # Change if out of cuda memory
+# batch_size = torch.cuda.device_count()*50 # Change if out of cuda memory
+batch_size = 1
+
 
 base_lr = 0.0001
 momentum = 0.9
